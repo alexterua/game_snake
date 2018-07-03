@@ -63,7 +63,7 @@ body {
     background-color: orange;
 }
 
-#game-score {
+.game-block {
     width: 200px;
     height: 80px;
     background-color: #fff;
@@ -72,5 +72,9 @@ body {
     border: 5px solid rgb(226, 195, 19);
     border-radius: 20px;
     font-size: 24px;
-    text-transform: uppercase;
+}
+
+#game-block__score {
+    font-size: 32px;
+    color: blue
 }

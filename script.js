@@ -140,6 +140,8 @@ function haveFood (unit) {
     // если змейка сьела еду
     if (isSnakeEating) {
         check = true;
+        // выводить счет
+        createScore();
         // создание новой еды
         createFood();
         // увеличение количества очков
@@ -164,6 +166,12 @@ function createFood () {
         foodCreated = true;
         console.log(food_cell, foodCreated);
     }
+}
+
+// создание очков игрока (кол-ва съеденной еды)
+function createScore() {
+    var game_score = document.querySelector('#game-block__score');
+    game_score.textContent = (score + 1);
 }
 
 // передвижение змейки
