@@ -11,6 +11,7 @@ var direction = "x-"; // по умолч. движется вверх, умен�
 var gameIsRunning = false; // по умолч. игра не запущена
 var snake_timer; // скорость обновления змейки
 var food_timer; // скорость обновления еды
+var wall_timer; // скорость обновления препятствия (стенки)
 var score = 0; // очки (кол-во съедененной еды)
 
 function init () {
@@ -50,10 +51,12 @@ function prepareGameField() {
 function startGame () {
     gameIsRunning = true;    
     respawn();
-
+    // скорость обновления змейки
     snake_timer = setInterval(move, SNAKE_SPEED); // move запустится ч/з SNAKE_SPEED мс
     // создание еды
     setTimeout(createFood, 5000); // еда создается ч/з 5сек после старта игры
+    // создание препятствия
+    setTimeout(createWall, 10000); // препятствия создается ч/з 10сек после старта игры
 }
 
 // расположение змейки на игровом поле
@@ -96,10 +99,15 @@ function move () {
         new_unit = document.querySelector("[data-cell='" + coord_x + '-' + (coord_y - 1) + "']");
     }
     // проверяем, что new_unit - не часть змейки
-    // и что змейка не дошла до границ
+    // и что змейка не дошла до границ    
     if (!isSnakeUnit(new_unit) && new_unit !== null) {
         new_unit.classList.add('snake-unit'); // создаем дополнительную ячейку с классом 'snake-unit'
         snake.push(new_unit);
+
+        if (crushIntoTheWall(new_unit)) {
+            // завершить игру
+            finishTheGame();
+        }
 
         // если змейка не ела, то убираем хвост
         if (!haveFood(new_unit)) {
@@ -117,6 +125,8 @@ function move () {
 function finishTheGame () {
     gameIsRunning = false;
     clearInterval(snake_timer);
+    //clearInterval(food_timer);
+    //clearInterval(wall_timer);
     alert('Игра окончена! Количество очков: ' + score);
 }
 
@@ -164,8 +174,37 @@ function createFood () {
     if (!isSnake) {
         food_cell.classList.add('food-unit');
         foodCreated = true;
-        console.log(food_cell, foodCreated);
     }
+}
+
+// создание препятствия
+function createWall () {
+    var wallCreated = false; // препятствие по умолч. не создано
+
+    // координаты случайной клетки с препятствием
+    var wall_x = Math.floor(Math.random() * FIELD_SIZE_X);
+    var wall_y = Math.floor(Math.random() * FIELD_SIZE_Y);
+    // ищем атрибут ячейки с препятствием
+    var wall_cell = document.querySelector("[data-cell ='" + wall_x + '-' + wall_y + "']");
+    var isSnake = wall_cell.classList.contains('snake-unit'); // true || false
+    var isFood = wall_cell.classList.contains('food-unit'); // true || false
+    // если нет змейки
+    if (!isSnake || !isFood) {
+        wall_cell.classList.add('wall-unit');
+        wallCreated = true;
+    }    
+}
+
+// проверка на встречу с препятствием
+function crushIntoTheWall (unit) {
+    var check = false;
+    var isSnakeCrush = unit.classList.contains('wall-unit');
+
+    // если змейка встретила препятствие
+    if (isSnakeCrush) {
+        check = true;
+    }
+    return check;
 }
 
 // создание очков игрока (кол-ва съеденной еды)

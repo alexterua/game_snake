@@ -78,3 +78,7 @@ body {
     font-size: 32px;
     color: blue
 }
+
+.wall-unit {
+    background-color: red;
+}
